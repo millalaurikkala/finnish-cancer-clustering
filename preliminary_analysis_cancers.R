@@ -6,10 +6,7 @@
 # setwd('your/working/directory')
 
 # read data
-
-## uncomment the following line and include the location of the data file ## 
-# incidence <- read.csv('path/to/data/incidence.csv', header = T, sep = ',')
-incidence <- read.csv('notebooks/Artikkeli/incidence.csv', header = T, sep = ',')
+incidence <- read.csv('incidence.csv', header = T, sep = ',')
 
 # choose 2023 data
 incidence_2023 <- incidence[incidence$Year == 2023,]
@@ -335,6 +332,64 @@ table(df$gender, df$age_group)
 
 # store the resulting dataframe into a CSV-file
 write.csv(df, 'cancer_data_most_common_cancers.csv', row.names = FALSE)
+
+
+
+# calculate percentage changes
+
+# this function is taken from agg_hierarch_clustering file
+# it is used for accessing the standardized data, which is not saved
+standardize_variables <- function(X) { 
+  overline_x <- mean(X)
+  std_x <- sqrt(sum((X - overline_x)^2) / length(X))
+  
+  standardized_X <- (X - overline_x) / std_x
+  return(standardized_X)
+}
+
+# function for calculating percent change within time period
+# calculates total change and yearly change
+calculate_per_change <- function(data, start, end){
+  l <- end-start + 1
+  yearly_change <- rep(0, l)
+  for (i in 2:l){
+    yearly_change[i] <- (data[i] - data[i-1])/abs(data[i-1])
+  }
+  total_change <- (data[end] - data[start])/abs(data[start])
+  return(c(total_change, yearly_change))
+}
+
+# get all years from which we have observations
+years <- df[df$gender == 'female' & df$age_group == '30-39' & df$cancer_id == 'Cervix uteri',]$year
+
+# First, calculate the percent changes for Cervix uteri cancer in females 30-39 years
+# between 1963 and 1980 and between 1990 and 2023 (unstandardized)
+f_30_cervix <- df[df$gender == 'female' & df$age_group == '30-39' 
+                                        & df$cancer_id == 'Cervix uteri',]$incidence
+
+# calculate the rate of change between start and end and find the maximum and minimum of yearly changes
+# 1963 to 1980
+res <- calculate_per_change(f_30_cervix, 1, which(years == 1980))
+total <- res[1]
+yearly <- res[-1]
+c(total, max(yearly), min(yearly))
+
+# 1990 to 2023
+res <- calculate_per_change(f_30_cervix, which(years == 1990), length(years))
+total <- res[1]
+yearly <- res[-1]
+c(total, max(yearly), min(yearly))
+
+
+
+# same calculations for Bladder & urinary tract cancer in males 40-49 years
+# between 1990 and 2023 (standardized)
+m_40_bladder <- standardize_variables(df[df$gender == 'male' & df$age_group == '40-49' & df$cancer_id == 'Bladder & urinary tract',]$incidence)
+res <- calculate_per_change(m_40_bladder, which(years == 1990), length(years))
+total <- res[1]
+yearly <- res[-1]
+c(total, max(yearly), min(yearly))
+
 
 # SUPPLEMENTAL MATERIAL; the following contains an additional functions - for plotting the incidence of the most common cancers
 # of a given age group and gender as time series from 1963 to 2023 - that was not used as the basis to produce any material in the

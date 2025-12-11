@@ -6,10 +6,7 @@
 # setwd('your/working/directory')
 
 # read data
-
-## uncomment the following line and include the location of the data file ## 
-# df <- read.csv('path/to/data/cancer_data_most_common_cancers.csv', header = T, sep = ',')
-df <- read.csv('notebooks/Artikkeli/cancer_data_most_common_cancers.csv', header = T, sep = ',')
+df <- read.csv('cancer_data_most_common_cancers.csv', header = T, sep = ',')
 
 # install needed packages
 #install.packages('cowplot')
@@ -22,6 +19,7 @@ library(glue)
 library(dendextend)
 #install.packages('ggdendro')
 library(ggdendro)
+library(dplyr)
 
 # define auxiliary functions for agglomerative hierarchical clustering
 
@@ -276,8 +274,9 @@ cluster_and_plot <- function(gender, age_group, standardization, nof_clusters, p
       legend.position = 'right',
       legend.justification = 'left',
       legend.direction = 'vertical',
-      legend.title = element_blank()
-    ) + 
+      legend.title = element_blank(), 
+      legend.key.spacing.y = unit(0.5, 'cm') # increase space between legend entries
+    ) + guides(fill = guide_legend(byrow = TRUE)) +
     xlab('Year') +
     ylab(ylab) +
     ggtitle(glue('{nof_clusters} clusters')) +
@@ -355,7 +354,7 @@ compute_dist_matrix <- function(data, standardization) {
 # define age groups and genders to iterate
 age_groups <- c('30-39', '40-49', '50-59', '60-69', '70-79')
 genders <- c('female', 'male')
-print_version <- T
+print_version <- F
 
 for (gender in genders) {
     for (age_group in age_groups) {

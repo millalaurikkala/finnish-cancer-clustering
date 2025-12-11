@@ -1,5 +1,5 @@
 In this folder, the supplementary files used to produce the results of the article 'On Cluster Structures of Finnish 
-Cancer Incidence Data' by Huhtinen et al. (2025) are provided. The contents and structure of the folder are as 
+Cancer Incidence Data' (2025) are provided. The contents and structure of the folder are as 
 follows:
 
 (i) 'cancer_registry_incidence_data.xlsx' contains the incidence data that is then analyzed in the article. The data 
